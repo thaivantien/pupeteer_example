@@ -11,15 +11,22 @@ const puppeteer = require('puppeteer');
   await page.goto('https://zingnews.vn/');
  
   const title = await page.evaluate(()=>{
-      var className = "";
+      var result =0;
       const idTag = document.getElementById("section-featured");
-      const classTag = idTag.querySelectorAll(".article-item.type-text.picked-featured")
-      for(var i=0; i< classTag.length; i++){
-          var title = classTag[i].querySelector(".article-title")
-          className += title.getElementsByTagName("a")[0].href +"\n";
+      const section_contents = idTag.querySelectorAll(".section-content")
+      for(var i=0; i<section_contents.length; i++){
+          var article_list = section_contents[i].querySelectorAll('[class*="article-list"]')
+        
+          for( var j =0; j< article_list.length; j++){
+                var articles = article_list[j].getElementsByTagName("article");
+                for(var a =0; a < articles.length; a++){
+                    var href =articles[a].querySelector(".article-title").getElementsByTagName("a")[0].href; 
+                    result += href + "-" +articles[a].querySelector(".article-title").textContent;
+                }
+          }
       }
-      return className;
+      return result;
   });
-  console.log(title);
+  console.log(title)
   await browser.close();
 })();
